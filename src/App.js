@@ -1,12 +1,15 @@
 import './App.css';
 import {useEffect, useState} from "react";
 import axios from "axios";
+import {Create, DeleteForever} from "@mui/icons-material";
 
 function App() {
     const [activeStatus, setActiveStatus] = useState('all')
     const [data, setData] = useState([])
     const [dataFiltered, setDataFiltered] = useState([])
     const [newTitle, setNewTitle] = useState('')
+    const [editMode, setEditMode] = useState(-1)
+    const [editTitle, setEditTile] = useState('')
     const status = ['all', 'active', 'completed']
 
     useEffect(()=>{
@@ -52,11 +55,19 @@ function App() {
 
     const handleUpdate = async (val) => {
         try {
-            await axios.put(`https://todo-list-be-production.up.railway.app/api/todo/${val.id}`, {
-                title: val.title,
-                completed: !val.completed
-            })
+            await axios.put(`https://todo-list-be-production.up.railway.app/api/todo/${val.id}`, val)
             getData()
+            setEditMode(-1)
+
+        }catch (e){
+            console.log(e)
+        }
+    }
+    const handleDelete = async (val) => {
+        try {
+            await axios.delete(`https://todo-list-be-production.up.railway.app/api/todo/${val.id}`)
+            getData()
+            setEditMode(-1)
 
         }catch (e){
             console.log(e)
@@ -89,15 +100,39 @@ function App() {
         </div>
         <div className={'list-box'}>
             {dataFiltered.map((val)=>{
-                return <label className={'todo-list'} key={val.id}>{val.title}
-                    <input
-                        type={'checkbox'}
-                        key={val.id}
-                        defaultChecked={val.completed}
-                        onClick={()=>{handleUpdate(val)}}
-                    />
-                    <span className={'checkmark'}></span>
-                    {val.completed ? <hr className={'line'} /> : ''}
+                return <label className={'todo-list'} key={val.id}>
+                    {editMode === val.id ? <div>
+                        <input
+                            className={'edit-title'}
+                            defaultValue={val.title}
+                            onChange={(event)=>{setEditTile(event.target.value)}}
+                            onKeyUp={
+                            (event) =>
+                                event.key === 'Enter' && handleUpdate({...val, title: editTitle})
+                        }
+                        />
+                    </div> : <div>
+                        {val.title}
+                        <input
+                            type={'checkbox'}
+                            className={'checkbox'}
+                            key={val.id}
+                            checked={val.completed}
+                            disabled
+                        />
+                        <span className={'checkmark'} onClick={()=>handleUpdate({...val, completed: !val.completed})}></span>
+                    </div>}
+
+                    {val.completed ? <hr className={'line'} /> : <div className={'action'}>
+                        <Create style={{color: '#4a5b6a', height: '18px'}} onClick={()=>{
+                            if(val.id !== editMode) {
+                                setEditMode(val.id)
+                            }else {
+                                setEditMode(-1)
+                            }
+                        }}/>
+                        <DeleteForever style={{color: '#4a5b6a', height: '18px'}} onClick={()=>handleDelete(val)}/>
+                    </div>}
                 </label>
             })}
         </div>

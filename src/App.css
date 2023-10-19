@@ -53,8 +53,9 @@
   border-radius: 6px;
   gap: 6px;
   margin-bottom: 20px;
-  padding: 10px 35px;
-  display: block;
+  padding: 10px 10px 10px 35px;
+  display: flex;
+  justify-content: space-between;
   position: relative;
   cursor: pointer;
   font-size: 12px;
@@ -66,7 +67,7 @@
 }
 
 /* Hide the browser's default checkbox */
-.todo-list input {
+.todo-list .checkbox {
   position: absolute;
   opacity: 0;
   cursor: pointer;
@@ -86,7 +87,7 @@
 }
 
 /* On mouse-over, add a grey background color */
-.todo-list:hover input ~ .checkmark {
+.todo-list:hover .checkbox ~ .checkmark {
   background-color: #e1e1e1;
 }
 
@@ -99,7 +100,7 @@
 }
 
 /* Show the checkmark when checked */
-.todo-list input:checked ~ .checkmark:after {
+.todo-list .checkbox:checked ~ .checkmark:after {
   display: block;
 }
 
@@ -120,5 +121,19 @@
   position: absolute;
   top: 12px;
   width: 85%;
+}
+
+.action{
+  display: flex;
+  gap: 5px
+}
+
+.edit-title, .edit-title:focus{
+  background-color: transparent;
+  border-bottom: 1px solid black;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  outline: none;
 }
 
